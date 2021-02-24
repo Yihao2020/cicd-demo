@@ -1,9 +1,3 @@
-env:
-  RUBY_VERSION: 2.7.2
-  POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres
-  POSTGRES_DB: postgres
-
 name: Rails tests
 on:
   push:
@@ -12,6 +6,11 @@ on:
     branches: [ main ]
 jobs:
   rspec-test:
+    env:
+      RUBY_VERSION: 2.7.2
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     name: RSpec
     runs-on: ubuntu-latest
     services:
