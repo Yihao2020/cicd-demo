@@ -1,3 +1,9 @@
+env:
+  RUBY_VERSION: 2.7.2
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_DB: postgres
+  
 name: Rails tests
 on:
   push:
@@ -6,11 +12,6 @@ on:
     branches: [ main ]
 jobs:
   rspec-test:
-    env:
-      RUBY_VERSION: 2.7.2
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
     name: RSpec
     runs-on: ubuntu-latest
     services:
@@ -41,15 +42,15 @@ jobs:
           cmd: install
       - name: Run tests
         run: bundler exec rspec .
-  deploy-to-heroku:
-    needs: rspec-test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: akhileshns/heroku-deploy@v3.11.10 
-        if: contains(github.ref, 'main')
-        with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "evening-fjord-13537"
-          heroku_email: "shayle@tamu.edu"
-          usedocker: true
+  # deploy-to-heroku:
+  #   needs: rspec-test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: akhileshns/heroku-deploy@v3.11.10 
+  #       if: contains(github.ref, 'main')
+  #       with:
+  #         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+  #         heroku_app_name: "evening-fjord-13537"
+  #         heroku_email: "shayle@tamu.edu"
+  #         usedocker: true
