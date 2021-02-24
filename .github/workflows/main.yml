@@ -34,8 +34,4 @@ jobs:
           bundler exec rails db:create RAILS_ENV=test
           bundler exec rails db:migrate RAILS_ENV=test
       - name: Run tests
-        run: 
-          gem install rspec-rails
-          gem install capybara
-          gem install webdrivers
-          rspec spec .
+        run: rspec spec .
