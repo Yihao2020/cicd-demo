@@ -1,5 +1,9 @@
 name: CI/CD
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -41,5 +45,7 @@ jobs:
           sudo apt-get -yqq install libpq-dev
           gem install bundler
           bundle install --jobs 4 --retry 3
-          bundle exec rails db:prepare
+          bundle exec rails db:create
+          bundle exec rails db:migrate
+          bundle exec rails test
           bundle exec rspec .
