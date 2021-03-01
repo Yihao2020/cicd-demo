@@ -51,7 +51,7 @@ jobs:
           bundle exec rails test
           bundle exec rspec .
   deploy-to-heroku:
-    needs: rspec-test
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
