@@ -51,5 +51,5 @@ jobs:
         with:
           dontuseforce: true
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "evening-fjord-13537"
+          heroku_app_name: "cicd-demo-2021"
           heroku_email: "shayle@tamu.edu"
