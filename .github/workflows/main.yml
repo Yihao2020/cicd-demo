@@ -31,7 +31,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.2
+          ruby-version: 2.7.x
       - uses: borales/actions-yarn@v2.3.0
         with:
           cmd: install
@@ -43,9 +43,9 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         run: |
-          sudo apt-get -yqq install libpq-dev
+          sudo apt-get install libpq-dev
           gem install bundler
-          bundle install --jobs 4 --retry 3
+          bundle install
           bundle exec rails db:prepare
           bundle exec rails db:migrate
           bundle exec rails test
