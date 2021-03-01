@@ -36,6 +36,7 @@ jobs:
       - name: Create database
         run: |
           bundler exec rails db:reset
+          bundler exec rails db:migrate
       - uses: borales/actions-yarn@v2.3.0
         with:
           cmd: install
