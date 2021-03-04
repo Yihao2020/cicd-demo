@@ -1,21 +1,22 @@
-name: CI
- 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+env:
+  RUBY_VERSION: 2.7.2
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_DB: postgres
 
+name: Rails tests
+on: [push,pull_request]
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
+    
     services:
       db:
-        image: postgres:12
-        ports: ['5432:5432']
+        image: postgres:latest
+        ports: ["5432:5432"]
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -31,35 +32,86 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.2
+          ruby-version: ${{ env.RUBY_VERSION }}
       - uses: borales/actions-yarn@v2.3.0
         with:
           cmd: install
-      - name: Build and run tests
+      - name: Build and run test
         env:
-        
-          DATABASE_URL: postgres://postgres@localhost:5432/test 
+          DATABASE_URL: postgres://postgres:@localhost:5432/test
           REDIS_URL: redis://localhost:6379/0
           RAILS_ENV: test
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         run: |
-          sudo apt-get install libpq-dev
+          sudo apt-get -yqq install libpq-dev
           gem install bundler
-          bundle install
-          bundle exec rails db:reset
-          bundle exec rails db:migrate
-          bundle exec rails test
-          bundle exec rspec .
-  deploy-to-heroku:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: akhileshns/heroku-deploy@v3.12.12 
-        if: contains(github.ref, 'main')
-        with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "cicd-demo-2021"
-          heroku_email: "shayle@tamu.edu"
+          bundle install --jobs 4 --retry 3
+          bundle exec rake db:create
+          bundle exec rake db:migrate
+          bundle exec rake
+# name: CI
+ 
+# on:
+#   push:
+#     branches: [ main ]
+#   pull_request:
+#     branches: [ main ]
+
+# jobs:
+#   test:
+#     runs-on: ubuntu-latest
+#     services:
+#       db:
+#         image: postgres:12
+#         ports: ['5432:5432']
+#         env:
+#           POSTGRES_USER: postgres
+#           POSTGRES_PASSWORD: postgres
+#         options: >-
+#           --health-cmd pg_isready
+#           --health-interval 10s
+#           --health-timeout 5s
+#           --health-retries 5
+#       redis:
+#         image: redis
+#         ports: ["6379:6379"]
+#         options: --entrypoint redis-server
+
+#     steps:
+#       - uses: actions/checkout@v2
+#       - name: Setup Ruby
+#         uses: ruby/setup-ruby@v1
+#         with:
+#           ruby-version: 2.7.2
+#       - uses: borales/actions-yarn@v2.3.0
+#         with:
+#           cmd: install
+#       - name: Build and run tests
+#         env:
+        
+#           DATABASE_URL: postgres://postgres@localhost:5432/test 
+#           REDIS_URL: redis://localhost:6379/0
+#           RAILS_ENV: test
+#           POSTGRES_USER: postgres
+#           POSTGRES_PASSWORD: postgres
+#         run: |
+#           sudo apt-get install libpq-dev
+#           gem install bundler
+#           bundle install
+#           bundle exec rails db:reset
+#           bundle exec rails db:migrate
+#           bundle exec rails test
+#           bundle exec rspec .
+#   deploy-to-heroku:
+#     needs: test
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#       - uses: akhileshns/heroku-deploy@v3.12.12 
+#         if: contains(github.ref, 'main')
+#         with:
+#           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+#           heroku_app_name: "cicd-demo-2021"
+#           heroku_email: "shayle@tamu.edu"
           
